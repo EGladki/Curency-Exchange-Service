@@ -26,19 +26,27 @@ public class ExceptionHandlingFilter implements Filter {
             chain.doFilter(request, response);
         } catch (BadRequestException e) {
             httpServletResponse.setStatus(SC_BAD_REQUEST);
-            JsonUtil.sendJson(httpServletResponse, Map.of("message", e.getMessage()));
+            JsonUtil.sendJson(httpServletResponse, Map.of(
+                    "code", SC_BAD_REQUEST,
+                    "message", e.getMessage()));
 
         } catch (AlreadyExistException e) {
             httpServletResponse.setStatus(SC_CONFLICT);
-            JsonUtil.sendJson(httpServletResponse, Map.of("message", e.getMessage()));
+            JsonUtil.sendJson(httpServletResponse, Map.of(
+                    "code", SC_CONFLICT,
+                    "message", e.getMessage()));
 
         } catch (NotFoundException e) {
             httpServletResponse.setStatus(SC_NOT_FOUND);
-            JsonUtil.sendJson(httpServletResponse, Map.of("message", e.getMessage()));
+            JsonUtil.sendJson(httpServletResponse, Map.of(
+                    "code", SC_NOT_FOUND,
+                    "message", e.getMessage()));
 
         } catch (DatabaseAccessException e) {
             httpServletResponse.setStatus(SC_INTERNAL_SERVER_ERROR);
-            JsonUtil.sendJson(httpServletResponse, Map.of("message", e.getMessage()));
+            JsonUtil.sendJson(httpServletResponse, Map.of(
+                    "code", SC_INTERNAL_SERVER_ERROR,
+                    "message", e.getMessage()));
         }
     }
 }

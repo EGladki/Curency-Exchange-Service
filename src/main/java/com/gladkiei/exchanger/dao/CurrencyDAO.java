@@ -14,7 +14,7 @@ import java.util.Optional;
 public class CurrencyDAO {
 
     public List<Currency> getAll() {
-        String sql = "SELECT * FROM currencies";
+        final String sql = "SELECT * FROM currencies";
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql);
@@ -23,12 +23,7 @@ public class CurrencyDAO {
 
             List<Currency> currencies = new ArrayList<>();
             while (resultSet.next()) {
-                currencies.add(new Currency(
-                        resultSet.getInt("id"),
-                        resultSet.getString("code"),
-                        resultSet.getString("full_name"),
-                        resultSet.getString("sign")
-                ));
+                currencies.add(getCurrency(resultSet));
             }
             return currencies;
 
@@ -38,7 +33,7 @@ public class CurrencyDAO {
     }
 
     public Optional<Currency> get(String code) {
-        String sql = "SELECT * FROM currencies WHERE UPPER(code) = UPPER(?)";
+        final String sql = "SELECT * FROM currencies WHERE UPPER(code) = UPPER(?)";
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -47,11 +42,7 @@ public class CurrencyDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                Currency currency = new Currency(
-                        resultSet.getInt("id"),
-                        resultSet.getString("code"),
-                        resultSet.getString("full_name"),
-                        resultSet.getString("sign"));
+                Currency currency = getCurrency(resultSet);
                 return Optional.of(currency);
             }
             return Optional.empty();
@@ -62,7 +53,7 @@ public class CurrencyDAO {
     }
 
     public Optional<Currency> insert(CurrencyRequestDTO currencyRequestDTO) {
-        String sql = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
+        final String sql = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
         String code = currencyRequestDTO.getCode();
         existValidation(code);
 
@@ -90,6 +81,14 @@ public class CurrencyDAO {
             throw new DatabaseAccessException("Error access to database");
         }
         return Optional.empty();
+    }
+
+    protected Currency getCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getInt("id"),
+                resultSet.getString("code"),
+                resultSet.getString("full_name"),
+                resultSet.getString("sign"));
     }
 
     private void existValidation(String code) {

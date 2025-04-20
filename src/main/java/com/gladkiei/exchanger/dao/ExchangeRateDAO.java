@@ -17,10 +17,11 @@ import java.util.List;
 import java.util.Optional;
 
 public class ExchangeRateDAO {
+    private final CurrencyDAO currencyDAO = new CurrencyDAO();
 
     public List<ExchangeRate> getAll() {
         List<ExchangeRate> exchangeRates = new ArrayList<>();
-        String sql = """
+        final String sql = """
                 SELECT er.id,
                        er.rate,
                        bc.id        as base_id,
@@ -45,17 +46,8 @@ public class ExchangeRateDAO {
             while (resultSet.next()) {
                 ExchangeRate rate = new ExchangeRate(
                         resultSet.getInt("id"),
-                        new Currency(
-                                resultSet.getInt("base_id"),
-                                resultSet.getString("base_code"),
-                                resultSet.getString("base_name"),
-                                resultSet.getString("base_sign")
-                        ),
-                        new Currency(resultSet.getInt("target_id"),
-                                resultSet.getString("target_code"),
-                                resultSet.getString("target_name"),
-                                resultSet.getString("target_sign")
-                        ),
+                        getBaseCurrency(resultSet),
+                        getTargetCurrency(resultSet),
                         resultSet.getDouble("rate")
                 );
                 exchangeRates.add(rate);
@@ -68,7 +60,7 @@ public class ExchangeRateDAO {
     }
 
     public Optional<ExchangeRate> get(ExchangeRateRequestDTO exchangeRateRequestDTO) {
-        String sql = """
+        final String sql = """
                 SELECT er.id,
                        er.rate,
                        bc.id        as base_id,
@@ -97,17 +89,8 @@ public class ExchangeRateDAO {
             if (resultSet.next()) {
                 return Optional.of(new ExchangeRate(
                         resultSet.getInt("id"),
-                        new Currency(
-                                resultSet.getInt("base_id"),
-                                resultSet.getString("base_code"),
-                                resultSet.getString("base_name"),
-                                resultSet.getString("base_sign")
-                        ),
-                        new Currency(resultSet.getInt("target_id"),
-                                resultSet.getString("target_code"),
-                                resultSet.getString("target_name"),
-                                resultSet.getString("target_sign")
-                        ),
+                        getBaseCurrency(resultSet),
+                        getTargetCurrency(resultSet),
                         resultSet.getDouble("rate")
                 ));
             }
@@ -120,7 +103,7 @@ public class ExchangeRateDAO {
     public Optional<ExchangeRate> insert(ExchangeRateRequestDTO exchangeRateRequestDTO) {
         existValidation(exchangeRateRequestDTO);
 
-        String sql = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
+        final String sql = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
 
         String baseCurrencyCode = exchangeRateRequestDTO.getBaseCurrencyCode();
         String targetCurrencyCode = exchangeRateRequestDTO.getTargetCurrencyCode();
@@ -158,7 +141,7 @@ public class ExchangeRateDAO {
     }
 
     public Optional<ExchangeRate> update(ExchangeRateRequestDTO exchangeRateRequestDTO) {
-        String sql = """
+        final String sql = """
                 UPDATE exchange_rates
                 SET rate = (?)
                 WHERE base_currency_id = (SELECT currencies.id FROM currencies WHERE code = UPPER(?))
@@ -187,7 +170,7 @@ public class ExchangeRateDAO {
     }
 
     public Integer getCurrencyIdByCode(String code) {
-        String sql = "SELECT id FROM currencies WHERE code = UPPER (?)";
+        final String sql = "SELECT id FROM currencies WHERE code = UPPER (?)";
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
@@ -206,7 +189,7 @@ public class ExchangeRateDAO {
     }
 
     public Currency getCurrencyById(int id) {
-        String sql = "SELECT * FROM currencies WHERE id = ?";
+        final String sql = "SELECT * FROM currencies WHERE id = ?";
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement statement = connection.prepareStatement(sql)) {
 
@@ -214,16 +197,28 @@ public class ExchangeRateDAO {
             ResultSet resultSet = statement.executeQuery();
 
             if (resultSet.next()) {
-                return new Currency(
-                        resultSet.getInt("id"),
-                        resultSet.getString("code"),
-                        resultSet.getString("full_name"),
-                        resultSet.getString("sign"));
+                return currencyDAO.getCurrency(resultSet);
             }
         } catch (SQLException e) {
             throw new BadRequestException("Failed getting currency by ID from database");
         }
         return null;
+    }
+
+    private Currency getBaseCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getInt("base_id"),
+                resultSet.getString("base_code"),
+                resultSet.getString("base_name"),
+                resultSet.getString("base_sign"));
+    }
+
+    private Currency getTargetCurrency(ResultSet resultSet) throws SQLException {
+        return new Currency(
+                resultSet.getInt("target_id"),
+                resultSet.getString("target_code"),
+                resultSet.getString("target_name"),
+                resultSet.getString("target_sign"));
     }
 
     private void existValidation(ExchangeRateRequestDTO exchangeRateRequestDTO) {

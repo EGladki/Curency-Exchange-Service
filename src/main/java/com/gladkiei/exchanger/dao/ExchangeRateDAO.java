@@ -8,13 +8,12 @@ import com.gladkiei.exchanger.models.Currency;
 import com.gladkiei.exchanger.models.ExchangeRate;
 import com.gladkiei.exchanger.utils.DatabaseConnectionManager;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
+import static org.sqlite.core.Codes.SQLITE_CONSTRAINT;
 
 public class ExchangeRateDAO {
     private final CurrencyDAO currencyDAO = new CurrencyDAO();
@@ -101,8 +100,6 @@ public class ExchangeRateDAO {
     }
 
     public Optional<ExchangeRate> insert(ExchangeRateRequestDTO exchangeRateRequestDTO) {
-        existValidation(exchangeRateRequestDTO);
-
         final String sql = "INSERT INTO exchange_rates (base_currency_id, target_currency_id, rate) VALUES (?, ?, ?)";
 
         String baseCurrencyCode = exchangeRateRequestDTO.getBaseCurrencyCode();
@@ -113,7 +110,7 @@ public class ExchangeRateDAO {
         int targetCurrencyId = getCurrencyIdByCode(targetCurrencyCode);
 
         try (Connection connection = DatabaseConnectionManager.getConnection();
-             PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
+             PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 
             preparedStatement.setInt(1, baseCurrencyId);
             preparedStatement.setInt(2, targetCurrencyId);
@@ -135,6 +132,9 @@ public class ExchangeRateDAO {
                 return Optional.of(new ExchangeRate(id, baseCurrency, targetCurrency, rate));
             }
         } catch (SQLException e) {
+            if (e.getErrorCode() == SQLITE_CONSTRAINT) {
+                throw new AlreadyExistException("Such exchange rate already exist");
+            }
             throw new DatabaseAccessException("Error access to database");
         }
         return Optional.empty();
@@ -185,7 +185,7 @@ public class ExchangeRateDAO {
         } catch (SQLException e) {
             throw new BadRequestException("Failed getting currency ID from database");
         }
-        return null;
+        throw new BadRequestException("Failed getting currency by ID from database");
     }
 
     public Currency getCurrencyById(int id) {
@@ -202,7 +202,7 @@ public class ExchangeRateDAO {
         } catch (SQLException e) {
             throw new BadRequestException("Failed getting currency by ID from database");
         }
-        return null;
+        throw new BadRequestException("Failed getting currency by ID from database");
     }
 
     private Currency getBaseCurrency(ResultSet resultSet) throws SQLException {
@@ -219,12 +219,5 @@ public class ExchangeRateDAO {
                 resultSet.getString("target_code"),
                 resultSet.getString("target_name"),
                 resultSet.getString("target_sign"));
-    }
-
-    private void existValidation(ExchangeRateRequestDTO exchangeRateRequestDTO) {
-        Optional<ExchangeRate> exchangeRate = get(exchangeRateRequestDTO);
-        if (exchangeRate.isPresent()) {
-            throw new AlreadyExistException("Such exchange rate already exist");
-        }
     }
 }

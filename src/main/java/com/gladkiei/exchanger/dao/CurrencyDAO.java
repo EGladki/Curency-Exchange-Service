@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static org.sqlite.core.Codes.SQLITE_CONSTRAINT;
+
 public class CurrencyDAO {
 
     public List<Currency> getAll() {
@@ -55,8 +57,6 @@ public class CurrencyDAO {
     public Optional<Currency> insert(CurrencyRequestDTO currencyRequestDTO) {
         final String sql = "INSERT INTO currencies (code, full_name, sign) VALUES (?, ?, ?)";
         String code = currencyRequestDTO.getCode();
-        existValidation(code);
-
         String name = currencyRequestDTO.getName();
         String sign = currencyRequestDTO.getSign();
 
@@ -78,6 +78,9 @@ public class CurrencyDAO {
                 }
             }
         } catch (SQLException e) {
+            if (e.getErrorCode() == SQLITE_CONSTRAINT) {
+                throw new AlreadyExistException("Such currency already exist");
+            }
             throw new DatabaseAccessException("Error access to database");
         }
         return Optional.empty();
@@ -91,11 +94,5 @@ public class CurrencyDAO {
                 resultSet.getString("sign"));
     }
 
-    private void existValidation(String code) {
-        Optional<Currency> currencyOptional = get(code);
-        if (currencyOptional.isPresent()) {
-            throw new AlreadyExistException("Such currency already exist");
-        }
-    }
 }
 

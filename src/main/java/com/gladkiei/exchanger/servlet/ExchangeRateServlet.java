@@ -72,7 +72,7 @@ public class ExchangeRateServlet extends HttpServlet {
         Optional<ExchangeRate> exchangeRate = exchangeRateDAO.update(exchangeRateRequestDTO);
 
         if (exchangeRate.isEmpty()) {
-            throw new NotFoundException("Exchange rate not found");
+            throw new NotFoundException("Exchange rate " + currencyPair + " not found");
         }
 
         ExchangeRateResponseDTO exchangeRateDTO = ExchangeRateMapper.toDto(exchangeRate.get());

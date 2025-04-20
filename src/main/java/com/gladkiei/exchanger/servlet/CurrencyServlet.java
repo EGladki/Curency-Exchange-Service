@@ -2,12 +2,11 @@ package com.gladkiei.exchanger.servlet;
 
 import com.gladkiei.exchanger.dao.CurrencyDAO;
 import com.gladkiei.exchanger.dto.CurrencyResponseDTO;
-import com.gladkiei.exchanger.exception.DatabaseAccessException;
+import com.gladkiei.exchanger.exception.NotFoundException;
 import com.gladkiei.exchanger.mapper.CurrencyMapper;
 import com.gladkiei.exchanger.models.Currency;
 import com.gladkiei.exchanger.utils.JsonUtil;
 import com.gladkiei.exchanger.utils.ValidationUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,7 +28,7 @@ public class CurrencyServlet extends HttpServlet {
 
         Optional<Currency> currencyOptional = currencyDAO.get(code);
         if (currencyOptional.isEmpty()) {
-            throw new DatabaseAccessException("Error getting currency from database");
+            throw new NotFoundException("Currency with code " + code + " not found");
         }
 
         CurrencyResponseDTO currencyDTO = CurrencyMapper.toDto(currencyOptional.get());

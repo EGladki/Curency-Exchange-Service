@@ -36,7 +36,7 @@ A lightweight Java-based REST API for managing currencies and exchange rates. Bu
 - `PATCH /exchangeRate` – Update a single exchange rate
 
 
-### How to test
+## How to test
 
 - `Copy project`
 - `Setup Tomcat` with

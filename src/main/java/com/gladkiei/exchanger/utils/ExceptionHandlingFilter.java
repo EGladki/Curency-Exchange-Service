@@ -1,11 +1,10 @@
-package com.gladkiei.exchanger.filter;
+package com.gladkiei.exchanger.utils;
 
 
 import com.gladkiei.exchanger.exception.AlreadyExistException;
 import com.gladkiei.exchanger.exception.BadRequestException;
 import com.gladkiei.exchanger.exception.DatabaseAccessException;
 import com.gladkiei.exchanger.exception.NotFoundException;
-import com.gladkiei.exchanger.utils.JsonUtil;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletResponse;

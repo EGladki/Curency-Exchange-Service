@@ -8,7 +8,7 @@ Accept: application/json
 
 ### Add a new currency
 POST http://localhost:8080/currency_exchange_war_exploded/currencies?
-    code=NZD&
+    code=USD&
     name=US dollar&
     sign=@
 Content-Type: application/json
@@ -25,8 +25,8 @@ Content-Type: application/json
 POST http://localhost:8080/currency_exchange_war_exploded/exchangeRates
 Content-Type: application/x-www-form-urlencoded
 
-baseCurrencyCode=RUB&
-targetCurrencyCode=EUR&
+baseCurrencyCode=JPY&
+targetCurrencyCode=USD&
 rate=90
 
 ### Update exchange rate USD → EUR
@@ -35,4 +35,11 @@ Content-Type: application/x-www-form-urlencoded
 
 rate=0.88
 
-###
+### Exchange from -> to
+GET http://localhost:8080/currency_exchange_war_exploded/exchange?from=USD&to=EUR&amount=107897789
+Content-Type: application/json
+
+
+
+
+

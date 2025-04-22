@@ -28,10 +28,8 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String pathInfo = req.getPathInfo();
-        validationUtil.validationPathInfo(pathInfo);
-
-        String currencyPair = pathInfo.substring(1).toUpperCase();
+        String currencyPair = req.getPathInfo().substring(1).toUpperCase();
+        validationUtil.validationCurrencyPair(currencyPair);
 
         String baseCode = currencyPair.substring(0, 3);
         validationUtil.codeValidation(baseCode);
@@ -52,10 +50,8 @@ public class ExchangeRateServlet extends HttpServlet {
 
     @Override
     protected void doPatch(HttpServletRequest req, HttpServletResponse resp) throws IOException {
-        String pathInfo = req.getPathInfo();
-        validationUtil.validationPathInfo(pathInfo);
-
-        String currencyPair = pathInfo.substring(1).toUpperCase();
+        String currencyPair = req.getPathInfo().substring(1).toUpperCase();
+        validationUtil.validationCurrencyPair(currencyPair);
 
         String baseCode = currencyPair.substring(0, 3);
         validationUtil.codeValidation(baseCode);

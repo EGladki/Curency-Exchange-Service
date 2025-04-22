@@ -51,12 +51,11 @@ public class ValidationUtil {
         rateValidation(rate);
     }
 
-    public void validationPathInfo(String pathInfo) {
-        if (isNullOrBlank(pathInfo)) {
+    public void validationCurrencyPair(String currencyPair) {
+        if (isNullOrBlank(currencyPair)) {
             throw new BadRequestException("Missing parameters, currency codes (example: USDEUR)");
         }
 
-        String currencyPair = pathInfo.substring(1).toUpperCase();
         if (currencyPair.length() != 6) {
             throw new BadRequestException("Request must be exactly 6 Latin letters");
         }

@@ -5,13 +5,13 @@ import com.gladkiei.exchanger.dto.ExchangeResponseDTO;
 import com.gladkiei.exchanger.service.ExchangeService;
 import com.gladkiei.exchanger.utils.JsonUtil;
 import com.gladkiei.exchanger.utils.ValidationUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
 
@@ -30,7 +30,7 @@ public class ExchangeServlet extends HttpServlet {
         validationUtil.codeValidation(targetCurrencyCode);
         validationUtil.amountValidation(amount);
 
-        ExchangeRequestDTO requestDTO = new ExchangeRequestDTO(baseCurrencyCode, targetCurrencyCode, Double.parseDouble(amount));
+        ExchangeRequestDTO requestDTO = new ExchangeRequestDTO(baseCurrencyCode, targetCurrencyCode, new BigDecimal(amount));
         ExchangeResponseDTO responseDTO = exchangeService.calculateExchangeRate(requestDTO);
 
         resp.setStatus(SC_OK);

@@ -12,15 +12,15 @@ import java.math.RoundingMode;
 public class ExchangeResponseDTO {
     private Currency baseCurrency;
     private Currency targetCurrency;
-    private double rate;
-    private double amount;
+    private BigDecimal rate;
+    private BigDecimal amount;
     private BigDecimal convertedAmount;
 
-    public ExchangeResponseDTO(Currency baseCurrency, Currency targetCurrency, double rate, double amount) {
+    public ExchangeResponseDTO(Currency baseCurrency, Currency targetCurrency, BigDecimal rate, BigDecimal amount) {
         this.baseCurrency = baseCurrency;
         this.targetCurrency = targetCurrency;
         this.rate = rate;
         this.amount = amount;
-        convertedAmount = BigDecimal.valueOf(rate * amount).setScale(2, RoundingMode.DOWN);
+        convertedAmount = rate.multiply(amount).setScale(2,RoundingMode.HALF_UP);
     }
 }

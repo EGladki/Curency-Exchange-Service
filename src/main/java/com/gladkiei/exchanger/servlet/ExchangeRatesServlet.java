@@ -8,13 +8,13 @@ import com.gladkiei.exchanger.mapper.ExchangeRateMapper;
 import com.gladkiei.exchanger.models.ExchangeRate;
 import com.gladkiei.exchanger.utils.JsonUtil;
 import com.gladkiei.exchanger.utils.ValidationUtil;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -46,7 +46,7 @@ public class ExchangeRatesServlet extends HttpServlet {
 
         validationUtil.validation(baseCurrencyCode, targetCurrencyCode, rateString);
 
-        double rate = Double.parseDouble(rateString);
+        BigDecimal rate = new BigDecimal(rateString);
 
         ExchangeRateRequestDTO exchangeRateRequestDTO = new ExchangeRateRequestDTO(baseCurrencyCode, targetCurrencyCode, rate);
         Optional<ExchangeRate> exchangeRate = exchangeRateDAO.insert(exchangeRateRequestDTO);

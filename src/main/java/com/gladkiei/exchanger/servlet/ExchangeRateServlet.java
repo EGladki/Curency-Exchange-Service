@@ -16,6 +16,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static jakarta.servlet.http.HttpServletResponse.SC_OK;
@@ -62,7 +63,7 @@ public class ExchangeRateServlet extends HttpServlet {
         String rateString = parserUtil.extractRateFromRequest(req);
         validationUtil.rateValidation(rateString);
 
-        double rate = Double.parseDouble(rateString);
+        BigDecimal rate = new BigDecimal(rateString);
         ExchangeRateRequestDTO exchangeRateRequestDTO = new ExchangeRateRequestDTO(baseCode, targetCode, rate);
 
         Optional<ExchangeRate> exchangeRate = exchangeRateDAO.update(exchangeRateRequestDTO);

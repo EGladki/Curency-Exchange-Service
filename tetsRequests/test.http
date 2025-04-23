@@ -36,7 +36,7 @@ Content-Type: application/x-www-form-urlencoded
 rate=0.88
 
 ### Exchange from -> to
-GET http://localhost:8080/currency_exchange_war_exploded/exchange?from=USD&to=EUR&amount=107897789
+GET http://localhost:8080/currency_exchange_war_exploded/exchange?from=USD&to=EUR&amount=107897789.00
 Content-Type: application/json
 
 

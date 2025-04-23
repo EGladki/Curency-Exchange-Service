@@ -7,6 +7,8 @@ import com.gladkiei.exchanger.dto.ExchangeResponseDTO;
 import com.gladkiei.exchanger.exception.NotFoundException;
 import com.gladkiei.exchanger.models.ExchangeRate;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Optional;
 
 public class ExchangeService {
@@ -49,7 +51,7 @@ public class ExchangeService {
         ExchangeRateRequestDTO exchangeRateRequestDTO = new ExchangeRateRequestDTO(exchangeRequestDTO.getTargetCurrencyCode(), exchangeRequestDTO.getBaseCurrencyCode());
         Optional<ExchangeRate> exchangeRate = exchangeRateDAO.get(exchangeRateRequestDTO);
         if (exchangeRate.isPresent()) {
-            double rate = 1 / exchangeRate.get().getRate();
+            BigDecimal rate = BigDecimal.ONE.divide(exchangeRate.get().getRate(),RoundingMode.HALF_UP);
             return Optional.of(new ExchangeResponseDTO(
                     exchangeRate.get().getTargetCurrency(),
                     exchangeRate.get().getBaseCurrency(),
@@ -67,7 +69,7 @@ public class ExchangeService {
             return Optional.empty();
         }
 
-        double usdBaseRate = usdBaseExchangeRate.get().getRate();
+        BigDecimal usdBaseRate = usdBaseExchangeRate.get().getRate();
 
         ExchangeRateRequestDTO usdTargetRequestDTO = new ExchangeRateRequestDTO(USD_CODE, exchangeRequestDTO.getTargetCurrencyCode());
         Optional<ExchangeRate> usdTargetExchangeRate = exchangeRateDAO.get(usdTargetRequestDTO);
@@ -76,8 +78,8 @@ public class ExchangeService {
             return Optional.empty();
         }
 
-        double usdTargetRate = usdTargetExchangeRate.get().getRate();
-        double resultRate = usdTargetRate / usdBaseRate;
+        BigDecimal usdTargetRate = usdTargetExchangeRate.get().getRate();
+        BigDecimal resultRate = usdTargetRate.divide(usdBaseRate, RoundingMode.HALF_UP);
         return Optional.of(new ExchangeResponseDTO(
                 usdBaseExchangeRate.get().getTargetCurrency(),
                 usdTargetExchangeRate.get().getTargetCurrency(),

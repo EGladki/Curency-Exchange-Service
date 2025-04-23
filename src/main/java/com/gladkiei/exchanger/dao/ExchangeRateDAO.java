@@ -8,6 +8,7 @@ import com.gladkiei.exchanger.models.Currency;
 import com.gladkiei.exchanger.models.ExchangeRate;
 import com.gladkiei.exchanger.utils.DatabaseConnectionManager;
 
+import java.math.BigDecimal;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -47,7 +48,7 @@ public class ExchangeRateDAO {
                         resultSet.getInt("id"),
                         getBaseCurrency(resultSet),
                         getTargetCurrency(resultSet),
-                        resultSet.getDouble("rate")
+                        resultSet.getBigDecimal("rate")
                 );
                 exchangeRates.add(rate);
             }
@@ -90,7 +91,7 @@ public class ExchangeRateDAO {
                         resultSet.getInt("id"),
                         getBaseCurrency(resultSet),
                         getTargetCurrency(resultSet),
-                        resultSet.getDouble("rate")
+                        resultSet.getBigDecimal("rate")
                 ));
             }
         } catch (SQLException e) {
@@ -104,7 +105,7 @@ public class ExchangeRateDAO {
 
         String baseCurrencyCode = exchangeRateRequestDTO.getBaseCurrencyCode();
         String targetCurrencyCode = exchangeRateRequestDTO.getTargetCurrencyCode();
-        double rate = exchangeRateRequestDTO.getRate();
+        BigDecimal rate = exchangeRateRequestDTO.getRate();
 
         int baseCurrencyId = getCurrencyIdByCode(baseCurrencyCode);
         int targetCurrencyId = getCurrencyIdByCode(targetCurrencyCode);
@@ -114,7 +115,7 @@ public class ExchangeRateDAO {
 
             preparedStatement.setInt(1, baseCurrencyId);
             preparedStatement.setInt(2, targetCurrencyId);
-            preparedStatement.setDouble(3, rate);
+            preparedStatement.setBigDecimal(3, rate);
 
             int rowsAffected = preparedStatement.executeUpdate();
 
@@ -151,7 +152,7 @@ public class ExchangeRateDAO {
         try (Connection connection = DatabaseConnectionManager.getConnection();
              PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
 
-            preparedStatement.setDouble(1, exchangeRateRequestDTO.getRate());
+            preparedStatement.setBigDecimal(1, exchangeRateRequestDTO.getRate());
             preparedStatement.setString(2, exchangeRateRequestDTO.getBaseCurrencyCode());
             preparedStatement.setString(3, exchangeRateRequestDTO.getTargetCurrencyCode());
 

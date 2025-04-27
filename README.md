@@ -11,7 +11,7 @@ A lightweight Java-based REST API for managing currencies and exchange rates. Bu
 - Centralized error handling
 - Input validation
 - Test frontend
-- filled test.html for manual testing
+- Filled test.html for manual testing
 
 ## Technologies
 

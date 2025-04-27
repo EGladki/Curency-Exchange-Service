@@ -1,28 +1,28 @@
 ### Get all currencies
-GET http://localhost:8080/currency_exchange_war_exploded/currencies
+GET http://localhost:8080/currencies
 Accept: application/json
 
 ### Get currency
-GET http://localhost:8080/currency_exchange_war_exploded/currency/USD
+GET http://localhost:8080/currency/USD
 Accept: application/json
 
 ### Add a new currency
-POST http://localhost:8080/currency_exchange_war_exploded/currencies?
+POST http://localhost:8080/currencies?
     code=USD&
     name=US dollar&
     sign=@
 Content-Type: application/json
 
 ### Get all exchange rates
-GET http://localhost:8080/currency_exchange_war_exploded/exchangeRates
+GET http://localhost:8080/exchangeRates
 Accept: application/json
 
 ### Get exchange rate USD → EUR
-GET http://localhost:8080/currency_exchange_war_exploded/exchangeRate/USDEUR
+GET http://localhost:8080/exchangeRate/USDEUR
 Content-Type: application/json
 
 ### Add new exchange rate
-POST http://localhost:8080/currency_exchange_war_exploded/exchangeRates
+POST http://localhost:8080/exchangeRates
 Content-Type: application/x-www-form-urlencoded
 
 baseCurrencyCode=JPY&
@@ -30,13 +30,13 @@ targetCurrencyCode=USD&
 rate=90
 
 ### Update exchange rate USD → EUR
-PATCH http://localhost:8080/currency_exchange_war_exploded/exchangeRate/USDEUR
+PATCH http://localhost:8080/exchangeRate/USDEUR
 Content-Type: application/x-www-form-urlencoded
 
 rate=0.88
 
 ### Exchange from -> to
-GET http://localhost:8080/currency_exchange_war_exploded/exchange?from=USD&to=EUR&amount=107897789.00
+GET http://localhost:8080/exchange?from=USD&to=EUR&amount=107897789.09
 Content-Type: application/json
 
 
